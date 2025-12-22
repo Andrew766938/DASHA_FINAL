@@ -9,10 +9,10 @@ from alembic import context
 from app.database.database import Base
 from app.config import settings
 
-# TODO Добавить сюда импорт созданных моделей
-# Пример:
+# ✅ Импортируем ВСЕ модели для Alembic
 from app.models.users import UserModel
 from app.models.roles import RoleModel
+from app.models.tickets import Train, Wagon, Seat, Ticket  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
