@@ -33,6 +33,10 @@ class Train(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships для SQLAdmin
+    wagons: Mapped[list["Wagon"]] = relationship(back_populates="train", cascade="all, delete-orphan")
+    tickets: Mapped[list["Ticket"]] = relationship(back_populates="train", cascade="all, delete-orphan")
 
 class Wagon(Base):
     __tablename__ = "wagons"
@@ -45,6 +49,11 @@ class Wagon(Base):
     price_multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # Множитель цены в зависимости от типа
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships для SQLAdmin
+    train: Mapped["Train"] = relationship(back_populates="wagons")
+    seats: Mapped[list["Seat"]] = relationship(back_populates="wagon", cascade="all, delete-orphan")
+    tickets: Mapped[list["Ticket"]] = relationship(back_populates="wagon", cascade="all, delete-orphan")
 
 class Seat(Base):
     __tablename__ = "seats"
@@ -56,6 +65,10 @@ class Seat(Base):
     is_reserved: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships для SQLAdmin
+    wagon: Mapped["Wagon"] = relationship(back_populates="seats")
+    tickets: Mapped[list["Ticket"]] = relationship(back_populates="seat", cascade="all, delete-orphan")
 
 class Ticket(Base):
     __tablename__ = "tickets"
@@ -77,3 +90,8 @@ class Ticket(Base):
     departure_time: Mapped[datetime] = mapped_column(DateTime)
     arrival_time: Mapped[datetime] = mapped_column(DateTime)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships для SQLAdmin - ВАЖНО для админ панели!
+    train: Mapped["Train"] = relationship(back_populates="tickets")
+    wagon: Mapped["Wagon"] = relationship(back_populates="tickets")
+    seat: Mapped["Seat"] = relationship(back_populates="tickets")
