@@ -106,84 +106,8 @@ if static_dir.exists():
 else:
     logger.warning(f"⚠️ Директория статических файлов не найдена: {static_dir}")
 
-# SQLAdmin - опциональная интеграция
-try:
-    from sqladmin import Admin, ModelView
-    from sqladmin.authentication import AuthenticationBackend
-    from app.models.users import UserModel
-    from app.models.tickets import Train, Wagon, Seat, Ticket
-    from app.models.roles import RoleModel
-    
-    # SQLAdmin Authentication
-    class AdminAuth(AuthenticationBackend):
-        async def login(self, username: str, password: str, request: Request) -> bool:
-            # Простая аутентификация с фиксированным паролем
-            return password == "01020304"
-
-        async def logout(self, request: Request) -> bool:
-            request.session.clear()
-            return True
-
-        async def authenticate(self, request: Request) -> bool:
-            token = request.session.get("admin_token")
-            return token == "admin_authenticated"
-    
-    # SQLAdmin ModelViews
-    class UserAdmin(ModelView, model=UserModel):
-        name = "Пользователь"
-        name_plural = "Пользователи"
-        column_list = [UserModel.id, UserModel.email, UserModel.name, UserModel.created_at]
-        column_exclude_list = [UserModel.hashed_password]
-
-    class TrainAdmin(ModelView, model=Train):
-        name = "Поезд"
-        name_plural = "Поезда"
-        column_list = [Train.id, Train.train_number, Train.route_from, Train.route_to, 
-                       Train.departure_time, Train.arrival_time]
-
-    class WagonAdmin(ModelView, model=Wagon):
-        name = "Вагон"
-        name_plural = "Вагоны"
-        column_list = [Wagon.id, Wagon.train_id, Wagon.wagon_number, Wagon.wagon_type]
-
-    class SeatAdmin(ModelView, model=Seat):
-        name = "Место"
-        name_plural = "Места"
-        column_list = [Seat.id, Seat.wagon_id, Seat.seat_number, Seat.is_reserved]
-
-    class TicketAdmin(ModelView, model=Ticket):
-        name = "Билет"
-        name_plural = "Билеты"
-        column_list = [Ticket.id, Ticket.ticket_number, Ticket.train_id, Ticket.seat_id,
-                       Ticket.passenger_name, Ticket.passenger_email, Ticket.final_price]
-
-    class RoleAdmin(ModelView, model=RoleModel):
-        name = "Роль"
-        name_plural = "Роли"
-        column_list = [RoleModel.id, RoleModel.name]
-    
-    # Регистрация SQLAdmin
-    admin = Admin(
-        app=app,
-        engine=engine,
-        title="Админ Панель - ВагоноМесто",
-        logo_url="https://cdn-icons-png.flaticon.com/512/4641/4641073.png",
-        authentication_backend=AdminAuth()
-    )
-    
-    admin.add_view(UserAdmin)
-    admin.add_view(TrainAdmin)
-    admin.add_view(WagonAdmin)
-    admin.add_view(SeatAdmin)
-    admin.add_view(TicketAdmin)
-    admin.add_view(RoleAdmin)
-    
-    logger.info("✅ SQLAdmin зарегистрирован на /admin")
-    logger.info("🔐 Пароль для входа: 01020304")
-    
-except ImportError as e:
-    logger.warning(f"⚠️ SQLAdmin не установлен или ошибка импорта: {e}")
-    logger.info("🚀 Подсказка: pip install sqladmin")
+# SQLAdmin - отключен для стабильности
+logger.info("ℹ️ SQLAdmin отключен (требует унификации моделей ORM)")
 
 # Главная страница - всегда возвращает index.html (фронтенд сам будет проверять токен)
 @app.get("/")
