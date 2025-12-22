@@ -164,12 +164,16 @@ class TicketRepository:
     
     async def delete_ticket(self, ticket_id: int) -> bool:
         """Удалить билет"""
-        ticket = await self.get_ticket(ticket_id)
-        if ticket:
-            await self.session.delete(ticket)
+        try:
+            await self.session.execute(
+                delete(Ticket).where(Ticket.id == ticket_id)
+            )
             await self.session.commit()
             return True
-        return False
+        except Exception as e:
+            print(f"Error deleting ticket: {e}")
+            await self.session.rollback()
+            return False
     
     async def get_tickets_by_train(self, train_id: int) -> List[Ticket]:
         result = await self.session.execute(
