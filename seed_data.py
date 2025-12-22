@@ -8,10 +8,12 @@ from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models.tickets import Base, Train, Wagon, Seat
-from app.config import DATABASE_URL
+from app.config import settings
 
 # Создаём подключение к БД
-engine = create_engine(DATABASE_URL)
+# Используем синхронный SQLite для seed скрипта
+DATABASE_URL = f"sqlite:///{settings.DB_NAME}"
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 
 def seed_database():
