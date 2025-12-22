@@ -106,10 +106,77 @@ if static_dir.exists():
 else:
     logger.warning(f"⚠️ Директория статических файлов не найдена: {static_dir}")
 
-# SQLAdmin - отключен для стабильности
-logger.info("ℹ️ SQLAdmin отключен (требует унификации моделей ORM)")
+# SQLAdmin
+try:
+    from sqladmin import Admin, ModelView
+    from sqladmin.authentication import AuthenticationBackend
+    from app.models.users import UserModel
+    from app.models.tickets import Train, Wagon, Seat, Ticket
+    from app.models.roles import RoleModel
+    
+    # SQLAdmin Authentication
+    class AdminAuth(AuthenticationBackend):
+        async def login(self, username: str, password: str, request: Request) -> bool:
+            return password == "01020304"
 
-# Главная страница - всегда возвращает index.html (фронтенд сам будет проверять токен)
+        async def logout(self, request: Request) -> bool:
+            request.session.clear()
+            return True
+
+        async def authenticate(self, request: Request) -> bool:
+            token = request.session.get("admin_token")
+            return token == "admin_authenticated"
+    
+    # SQLAdmin ModelViews
+    class UserAdmin(ModelView, model=UserModel):
+        name = "Пользователь"
+        name_plural = "Пользователи"
+        column_list = [UserModel.id, UserModel.email, UserModel.name]
+        column_exclude_list = [UserModel.hashed_password]
+
+    class TrainAdmin(ModelView, model=Train):
+        name = "Поезд"
+        name_plural = "Поезда"
+
+    class WagonAdmin(ModelView, model=Wagon):
+        name = "Вагон"
+        name_plural = "Вагоны"
+
+    class SeatAdmin(ModelView, model=Seat):
+        name = "Место"
+        name_plural = "Места"
+
+    class TicketAdmin(ModelView, model=Ticket):
+        name = "Билет"
+        name_plural = "Билеты"
+
+    class RoleAdmin(ModelView, model=RoleModel):
+        name = "Роль"
+        name_plural = "Роли"
+    
+    # Регистрация SQLAdmin
+    admin = Admin(
+        app=app,
+        engine=engine,
+        title="Админ Панель - ВагоноМесто",
+        logo_url="https://cdn-icons-png.flaticon.com/512/4641/4641073.png",
+        authentication_backend=AdminAuth()
+    )
+    
+    admin.add_view(UserAdmin)
+    admin.add_view(TrainAdmin)
+    admin.add_view(WagonAdmin)
+    admin.add_view(SeatAdmin)
+    admin.add_view(TicketAdmin)
+    admin.add_view(RoleAdmin)
+    
+    logger.info("✅ SQLAdmin зарегистрирован на /admin")
+    logger.info("🔐 Пароль для входа: 01020304")
+    
+except Exception as e:
+    logger.warning(f"⚠️ Ошибка SQLAdmin: {e}")
+
+# Главная страница
 @app.get("/")
 async def root():
     html_file = static_dir / "index.html"
