@@ -246,9 +246,29 @@
             border-radius: 20px;
             width: 100%;
             max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
             margin: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
+        }
+
+        .auth-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .auth-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
         }
 
         .auth-header {
