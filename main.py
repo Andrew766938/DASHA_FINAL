@@ -138,7 +138,6 @@ try:
     class UserAdmin(ModelView, model=UserModel):
         name = "Пользователь"
         name_plural = "Пользователи"
-        column_list = [UserModel.id, UserModel.email, UserModel.name]
         column_exclude_list = [UserModel.hashed_password]
 
     class TrainAdmin(ModelView, model=Train):
