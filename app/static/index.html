@@ -1,44 +1,5 @@
-        async function getMyTickets() {
-            const email = document.getElementById('userEmailFilter').value;
-            if (!email) {
-                alert('Пожалуйсте, введите ваш email');
-                return;
-            }
-
-            try {
-                console.log('🔍 Поиск билетов для email:', email);
-                
-                const response = await fetch(`${API_BASE}/user/${email}`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-                
-                console.log('📄 Ответ статус:', response.status);
-                console.log('📄 Ответ OK:', response.ok);
-                
-                const tickets = await response.json();
-                console.log('🎫 Полученные билеты:', tickets);
-                console.log('📊 Количество:', Array.isArray(tickets) ? tickets.length : '0');
-                
-                const container = document.getElementById('myTicketsList');
-                container.innerHTML = '';
-
-                if (!tickets || tickets.length === 0) {
-                    console.warn('⚠️ Билеты не найдены');
-                    container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">Билеты не найдены</p>';
-                    return;
-                }
-
-                console.log('✅ Отображаем', tickets.length, 'билетов');
-                
-                tickets.forEach((ticket, index) => {
-                    console.log(`🎫 Билет #${index}:`, ticket);
-                    const ticketEl = document.createElement('div');
-                    ticketEl.className = 'train-card';
-                    ticketEl.style.marginTop = '20px';
-                    ticketEl.innerHTML = `
-                        <div class="train-header">
+                                <div class="train-header">
                             <div><strong>Билет №${ticket.ticket_number || 'N/A'}</strong></div>
-                            <div>${ticket.is_paid ? '✅ Оплачен' : '⏳ Ожидает оплаты'}</div>
                         </div>
                         <div style="margin-top: 10px;">
                             <p><strong>Пассажир:</strong> ${ticket.passenger_name || 'N/A'}</p>
@@ -46,11 +7,3 @@
                             <p><strong>Место:</strong> Вагон (место ${ticket.seat_id || 'N/A'})</p>
                             <p><strong>Стоимость:</strong> <span style="color: #667eea; font-weight: bold;">${ticket.final_price || '0'} ₽</span></p>
                         </div>
-                    `;
-                    container.appendChild(ticketEl);
-                });
-            } catch (error) {
-                console.error('❌ Ошибка:', error);
-                alert('Ошибка при получении билетов');
-            }
-        }
