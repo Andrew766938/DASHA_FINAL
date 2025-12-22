@@ -110,12 +110,9 @@ else:
 try:
     from sqladmin import Admin, ModelView
     from sqladmin.authentication import AuthenticationBackend
-    from app.models.user import User
-    from app.models.train import Train
-    from app.models.wagon import Wagon
-    from app.models.seat import Seat
-    from app.models.ticket import Ticket
-    from app.models.discount import Discount
+    from app.models.users import User
+    from app.models.tickets import Train, Wagon, Seat, Ticket
+    from app.models.roles import Role
     
     # SQLAdmin Authentication
     class AdminAuth(AuthenticationBackend):
@@ -135,7 +132,7 @@ try:
     class UserAdmin(ModelView, model=User):
         name = "Пользователь"
         name_plural = "Пользователи"
-        column_list = [User.id, User.email, User.name, User.role_id, User.created_at]
+        column_list = [User.id, User.email, User.name, User.created_at]
         column_exclude_list = [User.password_hash]
 
     class TrainAdmin(ModelView, model=Train):
@@ -160,10 +157,10 @@ try:
         column_list = [Ticket.id, Ticket.ticket_number, Ticket.train_id, Ticket.seat_id,
                        Ticket.passenger_name, Ticket.passenger_email, Ticket.final_price]
 
-    class DiscountAdmin(ModelView, model=Discount):
-        name = "Скидка"
-        name_plural = "Скидки"
-        column_list = [Discount.id, Discount.type, Discount.percentage, Discount.description]
+    class RoleAdmin(ModelView, model=Role):
+        name = "Роль"
+        name_plural = "Роли"
+        column_list = [Role.id, Role.name]
     
     # Регистрация SQLAdmin
     admin = Admin(
@@ -179,13 +176,13 @@ try:
     admin.add_view(WagonAdmin)
     admin.add_view(SeatAdmin)
     admin.add_view(TicketAdmin)
-    admin.add_view(DiscountAdmin)
+    admin.add_view(RoleAdmin)
     
     logger.info("✅ SQLAdmin зарегистрирован на /admin")
     logger.info("🔐 Пароль для входа: 01020304")
     
 except ImportError as e:
-    logger.warning(f"⚠️ SQLAdmin не установлен или модели не найдены: {e}")
+    logger.warning(f"⚠️ SQLAdmin не установлен или ошибка импорта: {e}")
     logger.info("Установите зависимости: pip install sqladmin")
 
 # Главная страница - всегда возвращает index.html (фронтенд сам будет проверять токен)
