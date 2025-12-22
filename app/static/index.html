@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ВагоноМесто - Сервис покупки железнодорожных билетов</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,18 +20,24 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 0;
         }
 
         /* AUTH SCREEN STYLES */
         .auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+        }
+
+        .auth-screen.hidden {
+            display: none;
         }
 
         .auth-container {
@@ -34,6 +47,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 450px;
+            margin: 20px;
         }
 
         .auth-header {
@@ -179,29 +193,13 @@
             display: block;
         }
 
-        .auth-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        .auth-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .auth-link a:hover {
-            text-decoration: underline;
-        }
-
         /* APP SCREEN STYLES */
         .app-screen {
             display: none;
             flex-direction: column;
-            min-height: 100vh;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .app-screen.active {
@@ -210,7 +208,7 @@
 
         .wrapper {
             display: flex;
-            min-height: 100vh;
+            height: 100%;
             flex-direction: column;
         }
 
@@ -265,6 +263,7 @@
             gap: 0;
             border-bottom: 2px solid #e0e0e0;
             flex-shrink: 0;
+            overflow-x: auto;
         }
 
         .tab-button {
@@ -656,6 +655,7 @@
 
             .auth-container {
                 margin: 20px;
+                padding: 30px;
             }
         }
     </style>
@@ -907,11 +907,13 @@
         }
 
         function showAuthScreen() {
+            document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('authScreen').classList.add('active');
             document.getElementById('appScreen').classList.remove('active');
         }
 
         function showAppScreen() {
+            document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('authScreen').classList.remove('active');
             document.getElementById('appScreen').classList.add('active');
             loadUserInfo();
