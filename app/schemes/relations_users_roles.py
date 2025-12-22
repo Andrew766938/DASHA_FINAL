@@ -7,4 +7,4 @@ class SRoleGetWithRels(SRoleGet):
 
 
 class SUserGetWithRels(SUserGet):
-    role: SRoleGet
+    role: SRoleGet | None = None
