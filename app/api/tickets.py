@@ -264,6 +264,25 @@ async def get_user_tickets(
     """Получить все билеты пассажира"""
     return await service.get_user_tickets(passenger_email)
 
+@router.delete("/delete/{ticket_id}", summary="Удалить билет")
+async def delete_ticket(
+    ticket_id: int,
+    seat_service: SeatService = Depends(get_seat_service),
+    ticket_service: TicketService = Depends(get_ticket_service)
+):
+    """Удалить билет и освободить место"""
+    ticket = await ticket_service.get_ticket(ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Билет не найден")
+    
+    # Освободить место
+    await seat_service.release_seat(ticket.seat_id)
+    
+    # Удалить билет
+    await ticket_service.delete_ticket(ticket_id)
+    
+    return {"message": "Билет успешно удален", "ticket_id": ticket_id}
+
 @router.post("/pay", response_model=TicketResponse, summary="Оплатить билет")
 async def pay_ticket(
     payment: PaymentRequest,
