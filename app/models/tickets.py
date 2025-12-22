@@ -32,6 +32,7 @@ class Train(Base):
     base_price: Mapped[float] = mapped_column(Float)  # Базовая цена за место
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Wagon(Base):
     __tablename__ = "wagons"
@@ -43,6 +44,7 @@ class Wagon(Base):
     total_seats: Mapped[int] = mapped_column(Integer)
     price_multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # Множитель цены в зависимости от типа
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Seat(Base):
     __tablename__ = "seats"
@@ -53,6 +55,7 @@ class Seat(Base):
     is_available: Mapped[bool] = mapped_column(Boolean, default=True)
     is_reserved: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Ticket(Base):
     __tablename__ = "tickets"
@@ -73,3 +76,4 @@ class Ticket(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     departure_time: Mapped[datetime] = mapped_column(DateTime)
     arrival_time: Mapped[datetime] = mapped_column(DateTime)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
