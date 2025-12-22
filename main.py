@@ -1,6 +1,6 @@
 import uvicorn
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pathlib import Path
@@ -11,6 +11,8 @@ from app.api.auth import router as auth_router
 from app.api.roles import router as role_router
 from app.api.tickets import router as tickets_router
 from app.database.database import Base, engine
+from app.services.auth import AuthService
+from app.exceptions.auth import InvalidJWTTokenError, JWTTokenExpiredError
 
 # Логирование
 logging.basicConfig(
@@ -54,6 +56,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Middleware для проверки аутентификации на API routes
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    # Пропускаем auth routes и static files
+    if request.url.path.startswith("/api/auth") or request.url.path.startswith("/static") or request.url.path == "/" or request.url.path == "" or request.url.path == "/health":
+        return await call_next(request)
+    
+    # Для остальных API routes проверяем токен
+    if request.url.path.startswith("/api/"):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return FileResponse(
+                Path(__file__).parent / "app" / "static" / "index.html",
+                status_code=200
+            )
+        
+        token = auth_header.replace("Bearer ", "")
+        try:
+            AuthService.decode_token(token)
+        except (InvalidJWTTokenError, JWTTokenExpiredError):
+            return FileResponse(
+                Path(__file__).parent / "app" / "static" / "index.html",
+                status_code=200
+            )
+    
+    return await call_next(request)
+
 # Маршруты API
 app.include_router(sample_router)
 app.include_router(auth_router)
@@ -68,7 +97,7 @@ if static_dir.exists():
 else:
     logger.warning(f"⚠️ Директория статических файлов не найдена: {static_dir}")
 
-# Главная страница
+# Главная страница - всегда возвращает index.html (фронтенд сам будет проверять токен)
 @app.get("/")
 async def root():
     html_file = static_dir / "index.html"
