@@ -7,7 +7,7 @@ from sqlalchemy import select
 # IMPORTANT: Import all models first to register them
 from app.models.roles import RoleModel
 from app.models.users import UserModel
-from app.models.tickets import TrainModel, WagonModel, SeatModel, TicketModel
+from app.models.tickets import Train, Wagon, Seat, Ticket
 
 from app.database.database import Base, engine, async_session_maker
 
