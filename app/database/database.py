@@ -29,6 +29,11 @@ class Base(DeclarativeBase):
     )
 
 
+# Импортируем модели для регистрации в Base.metadata
+# Это ВАЖНО для создания таблиц через Base.metadata.create_all()
+from app.models.tickets import Train, Wagon, Seat, Ticket  # noqa: E402, F401
+
+
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """Зависимость для получения асинхронной сессии БД"""
     async with async_session_maker() as session:
