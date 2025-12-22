@@ -662,7 +662,7 @@
 </head>
 <body>
     <!-- AUTH SCREEN -->
-    <div class="auth-screen active" id="authScreen">
+    <div class="auth-screen" id="authScreen">
         <div class="auth-container">
             <div class="auth-header">
                 <div class="auth-logo">🚂</div>
@@ -908,13 +908,11 @@
 
         function showAuthScreen() {
             document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('authScreen').classList.add('active');
             document.getElementById('appScreen').classList.remove('active');
         }
 
         function showAppScreen() {
             document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('authScreen').classList.remove('active');
             document.getElementById('appScreen').classList.add('active');
             loadUserInfo();
         }
@@ -1309,9 +1307,16 @@
             }
         }
 
-        // Initialize
-        document.getElementById('date').valueAsDate = new Date();
-        initializeApp();
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('date').valueAsDate = new Date();
+                initializeApp();
+            });
+        } else {
+            document.getElementById('date').valueAsDate = new Date();
+            initializeApp();
+        }
     </script>
 </body>
 </html>
