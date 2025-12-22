@@ -764,6 +764,7 @@
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.05);
             color: #e0e0e0;
+            position: relative;
         }
 
         .seat:hover:not(.reserved) {
@@ -777,6 +778,14 @@
             color: #00d4ff !important;
             border-color: #00d4ff !important;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.4) !important;
+        }
+
+        .seat.selected::before {
+            content: '\2715';
+            position: absolute;
+            font-size: 1.5em;
+            color: #00d4ff;
+            font-weight: bold;
         }
 
         .seat.reserved {
