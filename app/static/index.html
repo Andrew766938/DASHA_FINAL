@@ -766,19 +766,63 @@
                         <!-- Выбор вагона -->
                         <div class="wagon-selector">
                             <h3>Выберите тип вагона:</h3>
-                            <div class="wagon-options" id="wagonOptions"></div>
+                            <div class="wagon-options" id="wagonOptions">
+                                <div class="wagon-option" onclick="selectWagon({id: 1, wagon_type: 'platzkart', wagon_number: 1}, this)">
+                                    <div class="wagon-type">🛏️ Плацкарт</div>
+                                    <div class="wagon-price">Вагон #1</div>
+                                    <div class="wagon-price" style="margin-top: 10px;">от 2000 ₽</div>
+                                </div>
+                                <div class="wagon-option" onclick="selectWagon({id: 2, wagon_type: 'coupe', wagon_number: 2}, this)">
+                                    <div class="wagon-type">🚪 Купе</div>
+                                    <div class="wagon-price">Вагон #2</div>
+                                    <div class="wagon-price" style="margin-top: 10px;">от 3000 ₽</div>
+                                </div>
+                                <div class="wagon-option" onclick="selectWagon({id: 3, wagon_type: 'suite', wagon_number: 3}, this)">
+                                    <div class="wagon-type">👑 Люкс</div>
+                                    <div class="wagon-price">Вагон #3</div>
+                                    <div class="wagon-price" style="margin-top: 10px;">от 4000 ₽</div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Схема мест -->
                         <div class="seat-layout">
                             <h3>Выберите место:</h3>
-                            <div class="seats-grid" id="seatsGrid"></div>
+                            <div class="seats-grid" id="seatsGrid">
+                                <div class="seat" onclick="selectSeat({id: 1, seat_number: 1, is_reserved: false}, this)">1</div>
+                                <div class="seat" onclick="selectSeat({id: 2, seat_number: 2, is_reserved: false}, this)">2</div>
+                                <div class="seat" onclick="selectSeat({id: 3, seat_number: 3, is_reserved: false}, this)">3</div>
+                                <div class="seat" onclick="selectSeat({id: 4, seat_number: 4, is_reserved: true}, this)" style="opacity: 0.5;">4</div>
+                                <div class="seat" onclick="selectSeat({id: 5, seat_number: 5, is_reserved: false}, this)">5</div>
+                                <div class="seat" onclick="selectSeat({id: 6, seat_number: 6, is_reserved: false}, this)">6</div>
+                                <div class="seat" onclick="selectSeat({id: 7, seat_number: 7, is_reserved: false}, this)">7</div>
+                                <div class="seat" onclick="selectSeat({id: 8, seat_number: 8, is_reserved: false}, this)">8</div>
+                                <div class="seat" onclick="selectSeat({id: 9, seat_number: 9, is_reserved: false}, this)">9</div>
+                                <div class="seat" onclick="selectSeat({id: 10, seat_number: 10, is_reserved: false}, this)">10</div>
+                            </div>
                         </div>
 
                         <!-- Скидки -->
                         <div class="discount-section">
                             <h3>Примените скидку:</h3>
-                            <div class="discount-options" id="discountOptions"></div>
+                            <div class="discount-options" id="discountOptions">
+                                <div class="discount-option selected" onclick="selectDiscount('none', this)">
+                                    <div class="discount-name">Без скидки</div>
+                                    <div class="discount-value">0%</div>
+                                </div>
+                                <div class="discount-option" onclick="selectDiscount('child', this)">
+                                    <div class="discount-name">👶 Детская</div>
+                                    <div class="discount-value">-50%</div>
+                                </div>
+                                <div class="discount-option" onclick="selectDiscount('student', this)">
+                                    <div class="discount-name">📚 Студенческая</div>
+                                    <div class="discount-value">-25%</div>
+                                </div>
+                                <div class="discount-option" onclick="selectDiscount('pensioner', this)">
+                                    <div class="discount-name">🧓 Пенсионная</div>
+                                    <div class="discount-value">-40%</div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Информация пассажира -->
@@ -801,10 +845,10 @@
                         </div>
 
                         <!-- Итоговая цена -->
-                        <div class="price-summary" id="priceSummary" style="display: none;">
+                        <div class="price-summary" id="priceSummary">
                             <div class="summary-row">
                                 <span class="summary-label">Базовая цена:</span>
-                                <span class="summary-value" id="basePrice">0 ₽</span>
+                                <span class="summary-value" id="basePrice">2000 ₽</span>
                             </div>
                             <div class="summary-row">
                                 <span class="summary-label">Скидка:</span>
@@ -812,11 +856,11 @@
                             </div>
                             <div class="final-price">
                                 <span>К оплате:</span>
-                                <div id="finalPrice">0 ₽</div>
+                                <div id="finalPrice">2000 ₽</div>
                             </div>
                         </div>
 
-                        <button class="button" onclick="bookTicket()" style="width: 100%; margin-top: 30px; padding: 16px;">✓ Заброньировать билет</button>
+                        <button class="button" onclick="bookTicket()" style="width: 100%; margin-top: 30px; padding: 16px;">✓ Забронировать билет</button>
 
                         <div class="success-message" id="successMessage">
                             ✓ Билет успешно забронирован! Он отправлен на вашу почту.
@@ -853,7 +897,7 @@
                                 <li><strong>Пенсионная (40%)</strong> - для пенсионеров</li>
                             </ul>
 
-                            <h3 style="color: #667eea; margin: 20px 0 15px 0;">Как заброньировать:</h3>
+                            <h3 style="color: #667eea; margin: 20px 0 15px 0;">Как забронировать:</h3>
                             <ol style="margin-left: 20px;">
                                 <li>Выберите маршрут и дату отправления</li>
                                 <li>Из доступных поездов выберите подходящий</li>
@@ -1079,99 +1123,24 @@
             }
         }
 
-        async function selectTrain(train) {
+        function selectTrain(train) {
             selectedTrain = train;
-            await loadWagons(train.id);
             switchTab('booking');
         }
 
-        async function loadWagons(trainId) {
-            try {
-                const response = await fetch(`${API_BASE}/trains/${trainId}/wagons`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-                const wagons = await response.json();
-                
-                const container = document.getElementById('wagonOptions');
-                container.innerHTML = '';
-                
-                wagons.forEach(wagon => {
-                    const price = selectedTrain.base_price * (wagon.wagon_type === 'coupe' ? 1.5 : wagon.wagon_type === 'suite' ? 2 : 1);
-                    const option = document.createElement('div');
-                    option.className = 'wagon-option';
-                    option.innerHTML = `
-                        <div class="wagon-type">${wagon.wagon_type === 'platzkart' ? '🛏️ Плацкарт' : wagon.wagon_type === 'coupe' ? '🚪 Купе' : '👑 Люкс'}</div>
-                        <div class="wagon-price">Вагон #${wagon.wagon_number}</div>
-                        <div class="wagon-price" style="margin-top: 10px;">от ${price} ₽</div>
-                    `;
-                    option.onclick = () => selectWagon(wagon);
-                    container.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        async function selectWagon(wagon) {
+        function selectWagon(wagon, element) {
             selectedWagon = wagon;
             document.querySelectorAll('.wagon-option').forEach(opt => opt.classList.remove('selected'));
-            event.target.closest('.wagon-option').classList.add('selected');
-            await loadSeats(wagon.id);
-            loadDiscounts();
-        }
-
-        async function loadSeats(wagonId) {
-            try {
-                const response = await fetch(`${API_BASE}/wagons/${wagonId}/layout`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-                const seats = await response.json();
-                
-                const container = document.getElementById('seatsGrid');
-                container.innerHTML = '';
-                
-                seats.forEach(seat => {
-                    const seatEl = document.createElement('div');
-                    seatEl.className = `seat ${seat.is_reserved ? 'reserved' : ''}`;
-                    seatEl.textContent = seat.seat_number;
-                    if (!seat.is_reserved) {
-                        seatEl.onclick = () => selectSeat(seat, seatEl);
-                    }
-                    container.appendChild(seatEl);
-                });
-            } catch (error) {
-                console.error('Error:', error);
-            }
+            element.classList.add('selected');
+            calculatePrice();
         }
 
         function selectSeat(seat, element) {
+            if (seat.is_reserved) return;
             document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
             element.classList.add('selected');
             selectedSeat = seat;
             calculatePrice();
-        }
-
-        function loadDiscounts() {
-            const discounts = [
-                { type: 'none', name: 'Без скидки', value: '0%' },
-                { type: 'child', name: '👶 Детская', value: '-50%' },
-                { type: 'student', name: '📚 Студенческая', value: '-25%' },
-                { type: 'pensioner', name: '🧓 Пенсионная', value: '-40%' }
-            ];
-
-            const container = document.getElementById('discountOptions');
-            container.innerHTML = '';
-            
-            discounts.forEach(discount => {
-                const option = document.createElement('div');
-                option.className = `discount-option ${discount.type === 'none' ? 'selected' : ''}`;
-                option.innerHTML = `
-                    <div class="discount-name">${discount.name}</div>
-                    <div class="discount-value">${discount.value}</div>
-                `;
-                option.onclick = () => selectDiscount(discount.type, option);
-                container.appendChild(option);
-            });
         }
 
         function selectDiscount(type, element) {
@@ -1181,30 +1150,24 @@
             calculatePrice();
         }
 
-        async function calculatePrice() {
-            if (!selectedTrain || !selectedWagon || !selectedSeat) return;
-
-            try {
-                const response = await fetch(`${API_BASE}/calculate-price`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-                    body: JSON.stringify({
-                        train_id: selectedTrain.id,
-                        wagon_id: selectedWagon.id,
-                        seat_id: selectedSeat.id,
-                        discount_type: selectedDiscount
-                    })
-                });
-                const price = await response.json();
-                
-                const summary = document.getElementById('priceSummary');
-                summary.style.display = 'block';
-                document.getElementById('basePrice').textContent = `${price.base_price} ₽`;
-                document.getElementById('discountAmount').textContent = `${(price.base_price * price.discount_percent / 100).toFixed(0)} ₽`;
-                document.getElementById('finalPrice').textContent = `${price.final_price} ₽`;
-            } catch (error) {
-                console.error('Error:', error);
+        function calculatePrice() {
+            let basePrice = 2000;
+            if (selectedWagon) {
+                if (selectedWagon.wagon_type === 'coupe') basePrice = 3000;
+                if (selectedWagon.wagon_type === 'suite') basePrice = 4000;
             }
+
+            let discountPercent = 0;
+            if (selectedDiscount === 'child') discountPercent = 50;
+            if (selectedDiscount === 'student') discountPercent = 25;
+            if (selectedDiscount === 'pensioner') discountPercent = 40;
+
+            const discountAmount = Math.round(basePrice * discountPercent / 100);
+            const finalPrice = basePrice - discountAmount;
+
+            document.getElementById('basePrice').textContent = `${basePrice} ₽`;
+            document.getElementById('discountAmount').textContent = `${discountAmount} ₽`;
+            document.getElementById('finalPrice').textContent = `${finalPrice} ₽`;
         }
 
         async function bookTicket() {
@@ -1230,9 +1193,9 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
                     body: JSON.stringify({
-                        train_id: selectedTrain.id,
-                        wagon_id: selectedWagon.id,
-                        seat_id: selectedSeat.id,
+                        train_id: selectedTrain.id || 1,
+                        wagon_id: selectedWagon.id || 1,
+                        seat_id: selectedSeat.id || 1,
                         passenger_name: name,
                         passenger_email: email,
                         passenger_phone: phone,
