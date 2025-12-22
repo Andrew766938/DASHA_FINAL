@@ -12,7 +12,7 @@ class TrainBase(BaseModel):
     base_price: float = Field(gt=0)
 
 class TrainCreate(TrainBase):
-    pass
+    is_active: bool = True
 
 class TrainResponse(TrainBase):
     id: int
