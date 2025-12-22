@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown - очистка при выключении
-    logger.info("💤 Приложение останавливается...")
+    logger.info("😴 Приложение останавливается...")
     await engine.dispose()
     logger.info("✅ Соединение с БД закрыто")
 
@@ -123,26 +123,41 @@ try:
         name = "Пользователь"
         name_plural = "Пользователи"
         column_exclude_list = [UserModel.hashed_password]
+        page_size = 10
+        page_size_options = [10, 25, 50]
 
     class TrainAdmin(ModelView, model=Train):
         name = "Поезд"
         name_plural = "Поезда"
+        page_size = 10
+        page_size_options = [10, 25, 50]
+        # Отключаем удаление поездов для безопасности
+        can_delete = False
 
     class WagonAdmin(ModelView, model=Wagon):
         name = "Вагон"
         name_plural = "Вагоны"
+        page_size = 10
+        page_size_options = [10, 25, 50]
 
     class SeatAdmin(ModelView, model=Seat):
         name = "Место"
         name_plural = "Места"
+        page_size = 20
+        page_size_options = [10, 20, 50]
 
     class TicketAdmin(ModelView, model=Ticket):
         name = "Билет"
         name_plural = "Билеты"
+        page_size = 10
+        page_size_options = [10, 25, 50]
+        column_exclude_list = []  # Показываем все поля
 
     class RoleAdmin(ModelView, model=RoleModel):
         name = "Роль"
         name_plural = "Роли"
+        page_size = 10
+        page_size_options = [10, 25, 50]
     
     # Регистрация SQLAdmin БЕЗ аутентификации
     admin = Admin(
