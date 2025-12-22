@@ -792,7 +792,7 @@
                                 <div class="seat" onclick="selectSeat({id: 1, seat_number: 1, is_reserved: false}, this)">1</div>
                                 <div class="seat" onclick="selectSeat({id: 2, seat_number: 2, is_reserved: false}, this)">2</div>
                                 <div class="seat" onclick="selectSeat({id: 3, seat_number: 3, is_reserved: false}, this)">3</div>
-                                <div class="seat" onclick="selectSeat({id: 4, seat_number: 4, is_reserved: true}, this)" style="opacity: 0.5;">4</div>
+                                <div class="seat reserved" onclick="selectSeat({id: 4, seat_number: 4, is_reserved: true}, this)">4</div>
                                 <div class="seat" onclick="selectSeat({id: 5, seat_number: 5, is_reserved: false}, this)">5</div>
                                 <div class="seat" onclick="selectSeat({id: 6, seat_number: 6, is_reserved: false}, this)">6</div>
                                 <div class="seat" onclick="selectSeat({id: 7, seat_number: 7, is_reserved: false}, this)">7</div>
@@ -918,8 +918,9 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000/api/tickets';
-        const AUTH_API = 'http://localhost:8000/api/auth';
+        // Коригирем базовые пути API
+        const API_BASE = '/api/tickets';
+        const AUTH_API = '/api/auth';
         let currentUser = null;
         let accessToken = localStorage.getItem('access_token');
         let selectedTrain = null;
