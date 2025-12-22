@@ -114,30 +114,9 @@ else:
 # SQLAdmin
 try:
     from sqladmin import Admin, ModelView
-    from sqladmin.authentication import AuthenticationBackend
     from app.models.users import UserModel
     from app.models.tickets import Train, Wagon, Seat, Ticket
     from app.models.roles import RoleModel
-    
-    # SQLAdmin Authentication
-    class AdminAuth(AuthenticationBackend):
-        async def login(self, request: Request) -> bool:
-            form = await request.form()
-            password = form.get("password", "")
-            
-            # Проверяем только пароль
-            if password == "01020304":
-                request.session["admin_token"] = "admin_authenticated"
-                return True
-            return False
-
-        async def logout(self, request: Request) -> bool:
-            request.session.clear()
-            return True
-
-        async def authenticate(self, request: Request) -> bool:
-            token = request.session.get("admin_token")
-            return token == "admin_authenticated"
     
     # SQLAdmin ModelViews
     class UserAdmin(ModelView, model=UserModel):
@@ -165,13 +144,12 @@ try:
         name = "Роль"
         name_plural = "Роли"
     
-    # Регистрация SQLAdmin
+    # Регистрация SQLAdmin БЕЗ аутентификации
     admin = Admin(
         app=app,
         engine=engine,
         title="Админ Панель - ВагоноМесто",
-        logo_url="https://cdn-icons-png.flaticon.com/512/4641/4641073.png",
-        authentication_backend=AdminAuth(secret_key=SESSION_SECRET)
+        logo_url="https://cdn-icons-png.flaticon.com/512/4641/4641073.png"
     )
     
     admin.add_view(UserAdmin)
@@ -182,7 +160,7 @@ try:
     admin.add_view(RoleAdmin)
     
     logger.info("✅ SQLAdmin зарегистрирован на /admin")
-    logger.info("🔐 Пароль для входа: 01020304")
+    logger.info("🔓 Админ панель открыта без пароля!")
     
 except Exception as e:
     logger.error(f"❌ Ошибка SQLAdmin: {e}")
@@ -203,7 +181,7 @@ async def health():
     return {"status": "ok", "service": "wagono-mesto"}
 
 if __name__ == "__main__":
-    logger.info("🚗 Запуск сервера ВагоноМесто...")
+    logger.info("🚂 Запуск сервера ВагоноМесто...")
     uvicorn.run(
         app=app,
         host="0.0.0.0",
