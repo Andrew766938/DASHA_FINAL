@@ -59,8 +59,16 @@ app.add_middleware(
 # Middleware для проверки аутентификации на API routes
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    # Пропускаем auth routes и static files
-    if request.url.path.startswith("/api/auth") or request.url.path.startswith("/static") or request.url.path == "/" or request.url.path == "" or request.url.path == "/health":
+    # Пропускаем auth routes, static files и public endpoints
+    if (request.url.path.startswith("/api/auth") or 
+        request.url.path.startswith("/static") or 
+        request.url.path == "/" or 
+        request.url.path == "" or 
+        request.url.path == "/health" or
+        # Разрешаем публичные эндпоинты для поиска и информации
+        request.url.path.startswith("/api/tickets/trains/search") or
+        request.url.path.startswith("/api/tickets/trains") or
+        request.url.path.startswith("/api/tickets/discounts")):
         return await call_next(request)
     
     # Для остальных API routes проверяем токен
