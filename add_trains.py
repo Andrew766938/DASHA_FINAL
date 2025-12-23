@@ -27,19 +27,18 @@ CITIES = [
     "Сочи",
 ]
 
-# Типы вагонов: (название, количество мест, базовая цена)
+# Типы вагонов: (название, количество мест, множитель цены)
 WAGON_TYPES = [
-    ("Плацкарт", 54, 800),      # 54 места, базовая цена 800
-    ("Купе", 36, 1500),          # 36 мест, базовая цена 1500
-    ("СВ (люкс)", 18, 2500),     # 18 мест, базовая цена 2500
-    ("Общий вагон", 81, 500),    # 81 место, базовая цена 500
+    ("platzkart", 54, 0.8),      # Плацкарт: 54 места, цена -20%
+    ("coupe", 36, 1.5),          # Купе: 36 мест, цена +50%
+    ("suite", 18, 2.5),          # СВ (люкс): 18 мест, цена +150%
 ]
 
 
 async def generate_trains():
     """Генерирует 30 разнообразных поездов"""
     trains = []
-    today = datetime.now().date()
+    today = datetime.now()
     
     train_numbers = [100 + i for i in range(30)]  # Номера поездов: 100-129
     
@@ -51,58 +50,69 @@ async def generate_trains():
             if departure_city != arrival_city:
                 break
         
-        # Случайные время отправления (от 00:00 до 23:00)
+        # Случайное время отправления (от 00:00 до 23:00)
         departure_hour = random.randint(0, 23)
         departure_minute = random.choice([0, 15, 30, 45])
-        departure_time = f"{departure_hour:02d}:{departure_minute:02d}:00"
+        departure_time = today.replace(
+            hour=departure_hour, 
+            minute=departure_minute, 
+            second=0, 
+            microsecond=0
+        )
         
         # Время в пути (2-14 часов)
         duration_hours = random.randint(2, 14)
-        arrival_hour = (departure_hour + duration_hours) % 24
-        arrival_minute = departure_minute
-        arrival_time = f"{arrival_hour:02d}:{arrival_minute:02d}:00"
-        
-        # Форматируем длительность
-        duration = f"{duration_hours} ч."
+        arrival_time = departure_time + timedelta(hours=duration_hours)
         
         # Базовая цена (от 500 до 3000 рублей)
         base_price = random.randint(500, 3000)
         
         # Дата отправления (от завтра до 30 дней вперёд)
         travel_date = today + timedelta(days=random.randint(1, 30))
+        departure_time = travel_date.replace(
+            hour=departure_hour, 
+            minute=departure_minute, 
+            second=0, 
+            microsecond=0
+        )
+        arrival_time = travel_date.replace(
+            hour=(departure_hour + duration_hours) % 24,
+            minute=departure_minute,
+            second=0,
+            microsecond=0
+        )
         
         train = Train(
-            number=str(train_num),
-            departure_city=departure_city,
-            arrival_city=arrival_city,
+            train_number=str(train_num),
+            route_from=departure_city,
+            route_to=arrival_city,
             departure_time=departure_time,
             arrival_time=arrival_time,
-            duration=duration,
+            duration_hours=duration_hours,
             base_price=base_price,
-            travel_date=travel_date,
-            available_seats=random.randint(5, 100),  # От 5 до 100 свободных мест
+            is_active=True,
         )
         trains.append(train)
     
     return trains
 
 
-async def create_wagons_for_train(session: AsyncSession, train_id: int):
+async def create_wagons_for_train(session: AsyncSession, train_id: int, base_price: float):
     """Создаёт вагоны для поезда"""
     wagons = []
     
-    # Добавляем 2-4 вагона случайных типов
-    num_wagons = random.randint(2, 4)
+    # Добавляем 2-3 вагона случайных типов
+    num_wagons = random.randint(2, 3)
     
     for wagon_num in range(1, num_wagons + 1):
-        wagon_type, seats_count, base_price = random.choice(WAGON_TYPES)
+        wagon_type, seats_count, price_multiplier = random.choice(WAGON_TYPES)
         
         wagon = Wagon(
             train_id=train_id,
-            number=wagon_num,
+            wagon_number=wagon_num,
             wagon_type=wagon_type,
-            seats_count=seats_count,
-            base_price=base_price,
+            total_seats=seats_count,
+            price_multiplier=price_multiplier,
         )
         session.add(wagon)
         wagons.append(wagon)
@@ -116,13 +126,14 @@ async def create_wagons_for_train(session: AsyncSession, train_id: int):
         )
         wagon_obj = wagon_result.scalar_one()
         
-        for seat_num in range(1, wagon_obj.seats_count + 1):
-            # 70% мест свободны, 30% занято
+        for seat_num in range(1, wagon_obj.total_seats + 1):
+            # 70% мест свободны, 30% зарезервированы
             is_reserved = random.random() < 0.3
             
             seat = Seat(
                 wagon_id=wagon_obj.id,
                 seat_number=seat_num,
+                is_available=not is_reserved,
                 is_reserved=is_reserved,
             )
             session.add(seat)
@@ -148,11 +159,11 @@ async def main():
             await session.flush()  # Сохраняем, чтобы получить ID
             
             # Создаём вагоны для этого поезда
-            await create_wagons_for_train(session, train.id)
+            await create_wagons_for_train(session, train.id, train.base_price)
             
-            print(f"✅ {i:2d}. Поезд №{train.number}: {train.departure_city} → {train.arrival_city}")
-            print(f"    ⏰ {train.departure_time} - {train.arrival_time} ({train.duration})")
-            print(f"    💰 Цена: {train.base_price} ₽ | 📅 {train.travel_date}\n")
+            print(f"✅ {i:2d}. Поезд №{train.train_number}: {train.route_from} → {train.route_to}")
+            print(f"    ⏰ {train.departure_time.strftime('%H:%M:%S')} - {train.arrival_time.strftime('%H:%M:%S')} ({train.duration_hours} ч.)")
+            print(f"    💰 Цена: {train.base_price} ₽ | 📅 {train.departure_time.date()}\n")
         
         # Сохраняем все изменения
         await session.commit()
